@@ -7,7 +7,6 @@ public class GroundController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            //PlayerController.isGrounded = true;
             PlayerController.isOnPlatform = false;
         }
     }

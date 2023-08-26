@@ -2,12 +2,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public Player player = new Player();
     public bool isOnPlatform;
-    public float playerSpeed = 2.0f;
-    public float jumpForce = 5.0f; // Adjust the jump force as needed
     private Rigidbody2D rb;
-
-    private void Start() => rb = GetComponent<Rigidbody2D>();
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
     private void Update()
     {
         Move();
@@ -18,20 +19,20 @@ public class PlayerController : MonoBehaviour
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         Vector2 moveDirection = new Vector2(horizontalInput, 0);
-        rb.velocity = new Vector2(moveDirection.x * playerSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(moveDirection.x * player.MoveSpeed, rb.velocity.y);
     }
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        if (Input.GetKeyDown(KeyCode.Space)) rb.velocity = new Vector2(rb.velocity.x, player.JumpSpeed);
     }
     private bool IsGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.2f, LayerMask.GetMask("Ground"));
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, LayerMask.GetMask("Ground"));
         return hit.collider != null;
     }
     private bool IsOnPlatform()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f, LayerMask.GetMask("WeightPlatform"));
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, LayerMask.GetMask("WeightPlatform"));
         return hit.collider != null;
     }
 

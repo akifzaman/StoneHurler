@@ -1,49 +1,18 @@
-//using UnityEngine;
-
-//public class PlatformController : MonoBehaviour
-//{
-//    public PlayerController PlayerController;
-//    [SerializeField] private float moveSpeed = 1.5f;
-//    //[SerializeField] private bool isOnPlatform = false;
-//    [SerializeField] private Vector2 initialPosition;
-//    [SerializeField] private Vector2 currentPosition;
-//    [SerializeField] private Vector2 targetPosition;
-//    private float distance = 2f;
-//    private Rigidbody2D rb;
-//    private void Start()
-//    {
-//        //isOnPlatform = true;
-//        initialPosition = transform.position;
-//        currentPosition = initialPosition;
-//        targetPosition = initialPosition - new Vector2(0, distance);
-//    }
-//    private void Update()
-//    {
-//        currentPosition = transform.position;
-//        if(PlayerController.isOnPlatform && currentPosition.y > targetPosition.y) 
-//            transform.Translate(targetPosition * moveSpeed * Time.deltaTime);
-//        else if(PlayerController.isOnPlatform && currentPosition.y < targetPosition.y) 
-//            transform.Translate(targetPosition * 0 * Time.deltaTime);
-//        else if(!PlayerController.isOnPlatform && currentPosition.y < initialPosition.y) 
-//            transform.Translate(targetPosition * -moveSpeed * Time.deltaTime);
-//        else if(!PlayerController.isOnPlatform && currentPosition.y > initialPosition.y) 
-//            transform.Translate(targetPosition * 0 * Time.deltaTime);
-//    }
-//}
 using UnityEngine;
 
 public class PlatformController : MonoBehaviour
 {
     public PlayerController PlayerController;
     public bool isInInitialPosition, isInTargetPosition;
-    [SerializeField] private float moveSpeed = 1.5f;
-    [SerializeField] private float distance = 2f;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float distance;
     [SerializeField] private Vector2 initialPosition;
     [SerializeField] private Vector2 targetPosition;
     private Rigidbody2D rb;
 
     private void Start()
     {
+        distance = PlayerController.player.Mass;
         rb = GetComponent<Rigidbody2D>();
         initialPosition = rb.position;
         targetPosition = initialPosition - new Vector2(0, distance);
@@ -51,6 +20,8 @@ public class PlatformController : MonoBehaviour
 
     private void Update()
     {
+        distance = PlayerController.player.Mass;
+        targetPosition = initialPosition - new Vector2(0, distance);
         Vector2 currentPosition = rb.position;
 
         if (PlayerController.isOnPlatform)
@@ -63,7 +34,7 @@ public class PlatformController : MonoBehaviour
             else
             {
                 rb.velocity = Vector2.zero;
-                rb.position = targetPosition; // Ensure platform reaches target
+                rb.position = targetPosition;
             }
         }
         else
@@ -76,7 +47,7 @@ public class PlatformController : MonoBehaviour
             else
             {
                 rb.velocity = Vector2.zero;
-                rb.position = initialPosition; // Ensure platform returns to initial position
+                rb.position = initialPosition;
             }
         }
     }
