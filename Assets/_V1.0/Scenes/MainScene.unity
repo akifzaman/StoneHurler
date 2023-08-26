@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 90237859}
   - component: {fileID: 90237858}
   - component: {fileID: 90237857}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ground (2)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 365470651}
   - component: {fileID: 365470650}
   - component: {fileID: 365470649}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ground (1)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 554595829}
   - component: {fileID: 554595828}
   - component: {fileID: 554595827}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ground (3)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   - component: {fileID: 831361741}
   - component: {fileID: 831361740}
   - component: {fileID: 831361739}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: platform
   m_TagString: WeightPlatform
   m_Icon: {fileID: 0}
@@ -640,7 +640,7 @@ GameObject:
   - component: {fileID: 1005471825}
   - component: {fileID: 1005471824}
   - component: {fileID: 1005471823}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ground (4)
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -835,7 +835,7 @@ GameObject:
   - component: {fileID: 1131865324}
   - component: {fileID: 1131865323}
   - component: {fileID: 1131865322}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
