@@ -39,6 +39,14 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("WeightPlatform")) transform.SetParent(collision.transform);
+        if (collision.gameObject.CompareTag("Item"))
+        {
+            IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
+            if (iPickable != null)
+            {
+                iPickable.Pick();
+            }
+        }
     }
     private void OnCollisionExit2D(Collision2D collision) => transform.SetParent(null);  
     

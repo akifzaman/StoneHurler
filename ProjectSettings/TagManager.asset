@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - WeightPlatform
+  - Item
   layers:
   - Default
   - TransparentFX
