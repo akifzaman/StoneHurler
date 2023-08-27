@@ -6,15 +6,16 @@ public class ItemController : MonoBehaviour
     private float stoneSpeed = 0f;
     private Rigidbody2D rb;
     
-    public void IncreaseMoveSpeed(float value)
+    public void IncreaseMoveSpeed(float value, float scaleX)
     {
         rb = GetComponent<Rigidbody2D>();
         stoneSpeed += value;
-        MoveStone();
+        MoveStone(scaleX);
     }
-    public void MoveStone()
+    public void MoveStone(float scalingFactor)
     {  
-        rb.AddForce(Vector2.right * stoneSpeed, ForceMode2D.Impulse);
+        if(scalingFactor >= 0) rb.AddForce(Vector2.right * stoneSpeed, ForceMode2D.Impulse);
+        else rb.AddForce(Vector2.left * stoneSpeed, ForceMode2D.Impulse);
     }
     public float GetMass()
     {

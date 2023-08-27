@@ -5,17 +5,18 @@ public class SpawnManager : MonoBehaviour
     public static SpawnManager Instance;
     public GameObject stone;
     public Transform throwPosition;
+    [SerializeField] private float speedMultiplier;
     public void Awake()
     {
         if(Instance == null) Instance = this;
         else Destroy(this.gameObject);
     }
-    public bool ThrowStone()
+    public bool ThrowStone(float value)
     {
         if (InventoryManager.Instance.inventory.Items.Count > 0)
         {
             var go = Instantiate(stone, throwPosition.position, Quaternion.identity);
-            go.GetComponent<ItemController>().IncreaseMoveSpeed(70f);
+            go.GetComponent<ItemController>().IncreaseMoveSpeed(speedMultiplier, value);
             InventoryManager.Instance.inventory.Items.RemoveAt(InventoryManager.Instance.inventory.Items.Count - 1);
             return true;
         }
