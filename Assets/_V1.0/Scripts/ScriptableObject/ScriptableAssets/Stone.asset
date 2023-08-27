@@ -15,4 +15,5 @@ MonoBehaviour:
   ItemIcon: {fileID: 21300016, guid: 51095c0ded273b74cad074f0d7d6b32a, type: 3}
   ItemName: Stone
   ItemDamage: 5
+  ItemSpeed: 70
   ItemPrefab: {fileID: 473983797303327254, guid: 61b22f424be9e714e8a8e84019b4894b, type: 3}

@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
     public Player player = new Player();
     public bool isOnPlatform;
     private Rigidbody2D rb;
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -13,6 +14,10 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         Jump();
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (SpawnManager.Instance.ThrowStone()) player.Mass -= 10f;
+        }
         isOnPlatform = IsOnPlatform();
     }
     private void Move()
@@ -41,6 +46,10 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("WeightPlatform")) transform.SetParent(collision.transform);
         if (collision.gameObject.CompareTag("Item"))
         {
+            if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
+            {
+                player.Mass += 10f;
+            }
             IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
             if (iPickable != null)
             {

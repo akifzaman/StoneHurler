@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 473983797303327249}
   - component: {fileID: 473983797303327250}
   - component: {fileID: 1906677343}
+  - component: {fileID: -5765098026188179735}
   m_Layer: 0
   m_Name: Stone
   m_TagString: Item
@@ -128,7 +129,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -147,3 +148,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 11400000, guid: e5a5e648a14b86945b232f779637d13f, type: 2}
+--- !u!114 &-5765098026188179735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473983797303327254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b4000a35c5af0c4ea3d56e20cd0f4ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

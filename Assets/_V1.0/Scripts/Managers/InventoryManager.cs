@@ -5,7 +5,7 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
     public Inventory inventory = new Inventory();
-    [SerializeField] private int inventoryCapacity;
+    public int inventoryCapacity;
 
     #region Singleton
     public void Awake()

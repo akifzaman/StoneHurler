@@ -4,6 +4,6 @@ public class Item : ScriptableObject
 {
     public Sprite ItemIcon;
     public string ItemName;
-    public string ItemDamage;
-    public GameObject ItemPrefab;
+    public float ItemDamage;
+    //public GameObject ItemPrefab;
 }
