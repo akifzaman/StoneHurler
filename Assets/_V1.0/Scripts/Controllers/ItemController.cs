@@ -5,7 +5,11 @@ public class ItemController : MonoBehaviour
     private float mass = 5f;
     private float stoneSpeed = 0f;
     private Rigidbody2D rb;
-    
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
     public void IncreaseMoveSpeed(float value, float scaleX)
     {
         rb = GetComponent<Rigidbody2D>();

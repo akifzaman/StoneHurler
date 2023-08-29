@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
 	private Movement inputActions;
 	private Rigidbody2D playerRb;
 	private Vector2 force;
-	[SerializeField] private AudioClip[] _footsteps;
+	//[SerializeField] private AudioClip[] _footsteps;
 	[SerializeField] private float _maxTilt = .1f;
 	[SerializeField] private float _tiltSpeed = 1;
 
@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
     }
     private bool IsOnPlatform()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, LayerMask.GetMask("WeightPlatform"));
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, LayerMask.GetMask("WeightPlatform"));
         return hit.collider != null;
     }
 	private void FixedUpdate()
