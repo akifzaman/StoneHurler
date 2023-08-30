@@ -14,16 +14,14 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Animation Keys
-    private static readonly int GroundedKey = Animator.StringToHash("Grounded");
-	private static readonly int IdleSpeedKey = Animator.StringToHash("IdleSpeed");
-	private static readonly int Speed = Animator.StringToHash("Speed");
-	private static readonly int JumpKey = Animator.StringToHash("Jump");
-    #endregion
+    private static readonly int jumpKey = Animator.StringToHash("isPressable");
+	private static readonly int moveKey = Animator.StringToHash("playerSpeed");
+	#endregion
 
-    #region Variables
-    //[SerializeField] private Animator _anim;
-    //[SerializeField] private AudioSource _source;
-    [SerializeField] private float speedFactor = .1f;
+	#region Variables
+	[SerializeField] private Animator _anim;
+	//[SerializeField] private AudioSource _source;
+	[SerializeField] private float speedFactor = .1f;
 	[SerializeField] private float verticalSpeed = 30f;
 	private float verticalSpeedTemp = 30f;
 	private Movement inputActions;
@@ -76,8 +74,12 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 		force = inputActions.player.movement.ReadValue<Vector2>();
-        //Move(force);
-        if (inputActions.player.Jump.IsPressed() && pressable) Jump();
+		//Move(force);
+		if (inputActions.player.Jump.IsPressed() && pressable)
+		{
+			_anim.SetBool(jumpKey, !pressable);
+            Jump();
+		}
         if (inputActions.player.SingleThrow.WasPressedThisFrame()) //for single stone throw
         {
             if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) player.Mass -= 10f;
@@ -106,9 +108,9 @@ public class PlayerController : MonoBehaviour
 	}
 	public void Move(Vector3 force)
 	{
-
 		if (force.magnitude > 0)
 		{
+			_anim.SetFloat(moveKey, force.magnitude);
 			transform.position = Vector2.Lerp(transform.position, transform.position + force * speedFactor, Time.deltaTime);
 			transform.localScale = new Vector3(force.x >= 0 ? Mathf.Abs(transform.localScale.x) : Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
 			if (appexModifier && !isGrounded)
@@ -117,8 +119,9 @@ public class PlayerController : MonoBehaviour
 				if (apexPoint > 0 && applyApexTime <= apexThresold) applyApexTime += Time.deltaTime;	
 			}
 		}
-	}
-	public void Jump()
+        else _anim.SetFloat(moveKey, 0);
+    }
+    public void Jump()
 	{
 		jumpCount++;
 		if (jumpCount <= maxJump)
@@ -134,6 +137,7 @@ public class PlayerController : MonoBehaviour
 		else
 		{
 			pressable = false;
+			_anim.SetBool(jumpKey, !pressable);
 			jumpCount = 0;
 		}
 		//_anim.SetBool(JumpKey, true);
