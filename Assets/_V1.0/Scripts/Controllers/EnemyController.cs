@@ -70,7 +70,11 @@ public class EnemyController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Item") && collision.gameObject.GetComponent<Rigidbody2D>().velocity.x != 0) 
+        if (collision.gameObject.CompareTag("Item") && collision.gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
+        {
+            GameManager.Instance.Score += 10;
+            GameManager.Instance.UpdateScore();
             Destroy(gameObject);
+        }
     }
 }

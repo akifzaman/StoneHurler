@@ -27,7 +27,6 @@ public class PlayerController : MonoBehaviour
 	private Movement inputActions;
 	private Rigidbody2D playerRb;
 	private Vector2 force;
-	//[SerializeField] private AudioClip[] _footsteps;
 	[SerializeField] private float _maxTilt = .1f;
 	[SerializeField] private float _tiltSpeed = 1;
 
@@ -74,7 +73,6 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 		force = inputActions.player.movement.ReadValue<Vector2>();
-		//Move(force);
 		if (inputActions.player.Jump.IsPressed() && pressable)
 		{
 			_anim.SetBool(jumpKey, !pressable);
@@ -90,9 +88,6 @@ public class PlayerController : MonoBehaviour
         }
         var targetRotVector = new Vector3(0, 0, Mathf.Lerp(-_maxTilt, _maxTilt, Mathf.InverseLerp(-1, 1, force.x)));
 		targetSprite.rotation = Quaternion.RotateTowards(targetSprite.rotation, Quaternion.Euler(targetRotVector), _tiltSpeed * Time.deltaTime);
-
-		//_anim.SetFloat(IdleSpeedKey, Mathf.Lerp(1, _maxIdleSpeed, Mathf.Abs(force.x)));
-
 		var groundHit = Physics2D.Raycast(transform.position, Vector3.down, 2, _groundMask);
         isOnPlatform = IsOnPlatform();
     }
@@ -104,7 +99,6 @@ public class PlayerController : MonoBehaviour
 	private void FixedUpdate()
 	{
 		Move(force);
-		//_anim.SetFloat(Speed, Mathf.Abs(force.x));
 	}
 	public void Move(Vector3 force)
 	{
@@ -140,45 +134,6 @@ public class PlayerController : MonoBehaviour
 			_anim.SetBool(jumpKey, !pressable);
 			jumpCount = 0;
 		}
-		//_anim.SetBool(JumpKey, true);
-	}
-	private void OnCollisionEnter2D(Collision2D collision)
-	{
-		if (collision.transform.tag == "Ground" || collision.transform.tag == "Wall")
-		{
-			lastGrounded = Time.time;
-			jumpCount = 0;
-			pressable = true;
-			isGrounded = true;
-			//_anim.SetBool(JumpKey, false);
-			//_anim.SetTrigger(GroundedKey);
-			//_source.PlayOneShot(_footsteps[Random.Range(0, _footsteps.Length)]);
-		}
-		if (collision.gameObject.CompareTag("WeightPlatform"))
-		{
-            pressable = true;
-            isGrounded = true;
-            transform.SetParent(collision.transform);
-		}
-        if (collision.gameObject.CompareTag("Item"))
-        {
-            pressable = true;
-            isGrounded = true;
-            if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
-            {
-                player.Mass += 10f;
-            }
-            IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
-            iPickable?.Pick();
-        }
-    }
-	private void OnCollisionExit2D(Collision2D collision)
-	{
-		if (collision.transform.tag == "Ground")
-		{
-			isGrounded = false;
-			lastGroundExit = Time.time;
-		}
 	}
 	public void Jump(InputAction.CallbackContext callbackContext)
 	{
@@ -186,8 +141,6 @@ public class PlayerController : MonoBehaviour
         if (callbackContext.performed && (isGrounded || (coyoteTime && (Time.time - lastGroundExit) <= coyoteTimeValue)) && (Time.time - lastGrounded) >= jumpBufferTime)
 		{
 			pressable = true;
-			//_anim.SetTrigger(JumpKey);
-			//_anim.ResetTrigger(GroundedKey);
 		}
 		else if (callbackContext.canceled) pressable = false;	
 	}
@@ -218,5 +171,44 @@ public class PlayerController : MonoBehaviour
 		{
 			jumpBufferTime = jumpBufferTimeTemp;
 		}
-	}	
+	}
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Ground" || collision.transform.tag == "Wall")
+        {
+            lastGrounded = Time.time;
+            jumpCount = 0;
+            pressable = true;
+            isGrounded = true;
+        }
+        if (collision.gameObject.CompareTag("WeightPlatform"))
+        {
+            pressable = true;
+            isGrounded = true;
+            transform.SetParent(collision.transform);
+        }
+        if (collision.gameObject.CompareTag("Item"))
+        {
+            pressable = true;
+            isGrounded = true;
+            if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
+            {
+                player.Mass += 10f;
+            }
+            IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
+            iPickable?.Pick();
+        }
+        if (collision.gameObject.CompareTag("Door"))
+        {
+            GameManager.Instance.GameOver();
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.transform.tag == "Ground")
+        {
+            isGrounded = false;
+            lastGroundExit = Time.time;
+        }
+    }
 }

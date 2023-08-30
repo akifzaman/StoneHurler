@@ -8,6 +8,7 @@ TagManager:
   - WeightPlatform
   - Item
   - Enemy
+  - Door
   layers:
   - Default
   - TransparentFX
