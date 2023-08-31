@@ -2,20 +2,27 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float detectionRange;
+    [SerializeField] private Enemy enemy = new Enemy();
     [SerializeField] private bool isFollowingPlayer = false;
-    [SerializeField] private float movingDistance = 20;
-    private bool movingRight = true;
+    [SerializeField] private bool movingRight = true;
     private Vector3 leftPoint;
     private Vector3 rightPoint;
     private Transform playerTransform;
 
+    private void Awake()
+    {
+        enemy.Health = 10f;
+        enemy.Damage = 10f;
+        enemy.MoveSpeed = 20f;
+        enemy.JumpSpeed = 20f;
+        enemy.DetectionRange = 200f;
+        enemy.MovingDistance = 20f;
+    }
     private void Start()
     {
         playerTransform = FindObjectOfType<PlayerController>()?.transform;
-        leftPoint = transform.position - Vector3.right * movingDistance;
-        rightPoint = transform.position + Vector3.right * movingDistance;
+        leftPoint = transform.position - Vector3.right * enemy.MovingDistance;
+        rightPoint = transform.position + Vector3.right * enemy.MovingDistance;
     }
 
     private void Update()
@@ -24,10 +31,10 @@ public class EnemyController : MonoBehaviour
         {
             float distanceToPlayerX = Mathf.Abs(transform.position.x - playerTransform.position.x);
             float distanceToPlayerY = Mathf.Abs(transform.position.y - playerTransform.position.y);
-            if (distanceToPlayerX <= detectionRange && distanceToPlayerY > -5f && distanceToPlayerY < 1f) isFollowingPlayer = true;
+            if (distanceToPlayerX <= enemy.DetectionRange && distanceToPlayerY > -5f && distanceToPlayerY < 1f) isFollowingPlayer = true;
             else isFollowingPlayer = false;
             if (isFollowingPlayer) FollowPlayer();
-            else MoveBetweenPoints();     
+            else MoveBetweenPoints();
         }
         else MoveBetweenPoints();
     }
@@ -37,8 +44,8 @@ public class EnemyController : MonoBehaviour
         Vector2 targetPosition = new Vector2(playerTransform.position.x, transform.position.y);
         if (playerTransform.position.x < transform.position.x) movingRight = false;
         else movingRight = true;
-        if (!movingRight) 
-        { 
+        if (!movingRight)
+        {
             Vector3 newScale = transform.localScale;
             newScale.x = -3;
             transform.localScale = newScale;
@@ -49,15 +56,14 @@ public class EnemyController : MonoBehaviour
             newScale.x = 3;
             transform.localScale = newScale;
         }
-        
-        transform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, targetPosition, enemy.MoveSpeed * Time.deltaTime);
     }
 
     private void MoveBetweenPoints()
     {
         Vector3 targetPoint = movingRight ? rightPoint : leftPoint;
         Vector3 movementDirection = (targetPoint - transform.position).normalized;
-        transform.position += movementDirection * moveSpeed * Time.deltaTime;
+        transform.position += movementDirection * enemy.MoveSpeed * Time.deltaTime;
         float distanceToTarget = Vector3.Distance(transform.position, targetPoint);
         if (distanceToTarget < 0.1f)
         {
@@ -67,14 +73,16 @@ public class EnemyController : MonoBehaviour
             transform.localScale = newScale;
         }
     }
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Item") && collision.gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
         {
-            GameManager.Instance.Score += 10;
-            GameManager.Instance.UpdateScore();
-            Destroy(gameObject);
+            enemy.Health -= 5f;
+            if (enemy.Health <= 0)
+            {
+                GameManager.Instance.UpdateScore();
+                Destroy(gameObject);
+            }
         }
     }
 }

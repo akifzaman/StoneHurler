@@ -13,12 +13,11 @@ public class GameManager : MonoBehaviour
         else Destroy(Instance);
     }
     #endregion
-    public void Start()
-    {
-        isGameOver = false;
-    }
+    public void Start() => isGameOver = false;
+    
     public void UpdateScore()
     {
+        Score += 10f;
         UIManager.Instance.OnScoreUpdate(Score);
     }
     public void GameOver()

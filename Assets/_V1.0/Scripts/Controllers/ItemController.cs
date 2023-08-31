@@ -30,5 +30,4 @@ public class ItemController : MonoBehaviour
         if (collision.gameObject.CompareTag("WeightPlatform")) transform.SetParent(collision.transform);
         else transform.SetParent(null);
     }
-
 }

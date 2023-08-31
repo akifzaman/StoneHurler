@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
     public TextMeshProUGUI PlayerHealthText;
     public TextMeshProUGUI ScoreText;
+    public TextMeshProUGUI StoneCountText;
     public GameObject GameOverPanel;
 
     #region Singleton
@@ -17,6 +18,7 @@ public class UIManager : MonoBehaviour
     #endregion
     public void OnPlayerHealthUpdate(float value) => PlayerHealthText.text = $"Health: {value}";
     public void OnScoreUpdate(float value) => ScoreText.text = $"Score: {value}";
+    public void OnStoneCountUpdate(int value) => StoneCountText.text = $"x{value}";
 
 
 }

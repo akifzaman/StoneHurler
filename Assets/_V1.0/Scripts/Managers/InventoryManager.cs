@@ -26,6 +26,12 @@ public class InventoryManager : MonoBehaviour
             inventory.InventoryItemsCount.Add(item.ItemName, newItemsList);
         }
         else inventory.InventoryItemsCount[item.ItemName].Add(item);
+        UIManager.Instance.OnStoneCountUpdate(inventory.Items.Count);
         return item;
+    }
+    public void RemoveFromInventory()
+    {
+        inventory.Items.RemoveAt(inventory.Items.Count - 1);
+        UIManager.Instance.OnStoneCountUpdate(inventory.Items.Count);
     }
 }

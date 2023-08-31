@@ -25,7 +25,6 @@ public class PlatformController : MonoBehaviour
         distance = PlayerController.player.Mass;
         targetPosition = initialPosition - new Vector2(0, distance);
         Vector2 currentPosition = rb.position;
-
         if (PlayerController.isOnPlatform)
         {
             if (currentPosition.y > targetPosition.y)

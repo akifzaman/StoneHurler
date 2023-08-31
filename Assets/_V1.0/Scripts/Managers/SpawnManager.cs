@@ -17,7 +17,7 @@ public class SpawnManager : MonoBehaviour
         {
             var go = Instantiate(stone, throwPosition.position, Quaternion.identity);
             go.GetComponent<ItemController>().IncreaseMoveSpeed(speedMultiplier, value);
-            InventoryManager.Instance.inventory.Items.RemoveAt(InventoryManager.Instance.inventory.Items.Count - 1);
+            InventoryManager.Instance.RemoveFromInventory();
             return true;
         }
         return false;

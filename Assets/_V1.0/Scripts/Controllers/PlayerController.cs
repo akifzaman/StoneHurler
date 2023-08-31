@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour 
+public class PlayerController : MonoBehaviour
 {
     #region Configurations
     [Header("Configuration")]
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private bool pressable = true;
 	private float gravityScale;
     #endregion
-
     public Player player = new Player();
 	public bool isOnPlatform;
 
@@ -67,8 +66,9 @@ public class PlayerController : MonoBehaviour
 		OnAppexModifierChange(true);
 		playerRb = GetComponent<Rigidbody2D>();
 		gravityScale = playerRb.gravityScale;
-	}
-	private void OnEnable() => inputActions.Enable();
+        UIManager.Instance.OnPlayerHealthUpdate(player.Health);
+    }
+    private void OnEnable() => inputActions.Enable();
 	private void OnDisable() => inputActions.Disable();
 	private void Update()
 	{
@@ -84,7 +84,10 @@ public class PlayerController : MonoBehaviour
         }
         if (inputActions.player.MultipleThrow.IsPressed()) //for multiple stone throw
         {
-            if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) player.Mass -= 10f;	
+			if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
+			{
+				player.Mass -= 10f;
+			}
         }
         var targetRotVector = new Vector3(0, 0, Mathf.Lerp(-_maxTilt, _maxTilt, Mathf.InverseLerp(-1, 1, force.x)));
 		targetSprite.rotation = Quaternion.RotateTowards(targetSprite.rotation, Quaternion.Euler(targetRotVector), _tiltSpeed * Time.deltaTime);
@@ -174,12 +177,22 @@ public class PlayerController : MonoBehaviour
 	}
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.tag == "Ground" || collision.transform.tag == "Wall")
+        if (collision.transform.CompareTag("Ground"))
         {
             lastGrounded = Time.time;
             jumpCount = 0;
             pressable = true;
             isGrounded = true;
+        }
+		if (collision.transform.CompareTag("Enemy"))
+        {
+			player.Health -= 5f;
+			UIManager.Instance.OnPlayerHealthUpdate(player.Health);
+			if (player.Health <= 0f)
+			{
+				GameManager.Instance.GameOver();
+				gameObject.SetActive(false);
+			}
         }
         if (collision.gameObject.CompareTag("WeightPlatform"))
         {
@@ -205,7 +218,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.transform.tag == "Ground")
+        if (collision.transform.CompareTag("Ground"))
         {
             isGrounded = false;
             lastGroundExit = Time.time;
