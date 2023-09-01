@@ -184,16 +184,6 @@ public class PlayerController : MonoBehaviour
             pressable = true;
             isGrounded = true;
         }
-		if (collision.transform.CompareTag("Enemy"))
-        {
-			player.Health -= 5f;
-			UIManager.Instance.OnPlayerHealthUpdate(player.Health);
-			if (player.Health <= 0f)
-			{
-				GameManager.Instance.GameOver();
-				gameObject.SetActive(false);
-			}
-        }
         if (collision.gameObject.CompareTag("WeightPlatform"))
         {
             pressable = true;
@@ -222,6 +212,19 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = false;
             lastGroundExit = Time.time;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.CompareTag("Enemy"))
+        {
+            player.Health -= 5f;
+            UIManager.Instance.OnPlayerHealthUpdate(player.Health);
+            if (player.Health <= 0f)
+            {
+                GameManager.Instance.GameOver();
+                gameObject.SetActive(false);
+            }
         }
     }
 }

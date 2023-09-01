@@ -9,6 +9,8 @@ TagManager:
   - Item
   - Enemy
   - Door
+  - Thorne
+  - Locker
   layers:
   - Default
   - TransparentFX
@@ -19,8 +21,8 @@ TagManager:
   - WeightPlatform
   - Player
   - Enemy
-  - 
-  - 
+  - Thorne
+  - Locker
   - 
   - 
   - 

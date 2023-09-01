@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ItemController : MonoBehaviour
@@ -17,8 +18,8 @@ public class ItemController : MonoBehaviour
         MoveStone(scaleX);
     }
     public void MoveStone(float scalingFactor)
-    {  
-        if(scalingFactor >= 0) rb.AddForce(Vector2.right * stoneSpeed, ForceMode2D.Impulse);
+    {
+        if (scalingFactor >= 0) rb.AddForce(Vector2.right * stoneSpeed, ForceMode2D.Impulse);
         else rb.AddForce(Vector2.left * stoneSpeed, ForceMode2D.Impulse);
     }
     public float GetMass()
@@ -29,5 +30,26 @@ public class ItemController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("WeightPlatform")) transform.SetParent(collision.transform);
         else transform.SetParent(null);
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        var enemy = collision.gameObject.GetComponent<EnemyController>();
+        if (enemy != null && gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
+        {
+            enemy.OnEnemyTakeDamage();
+            //gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(2.5f, 0f);
+            //collision.gameObject.GetComponent<BoxCollider2D>().enabled = false;  
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        var enemy = collision.gameObject.GetComponent<EnemyController>();
+        if (enemy != null && gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
+        {
+            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, gameObject.GetComponent<Rigidbody2D>().velocity.y);
+        }
     }
 }

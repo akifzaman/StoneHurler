@@ -73,16 +73,13 @@ public class EnemyController : MonoBehaviour
             transform.localScale = newScale;
         }
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void OnEnemyTakeDamage()
     {
-        if (collision.gameObject.CompareTag("Item") && collision.gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
+        enemy.Health -= 5f;
+        if (enemy.Health <= 0)
         {
-            enemy.Health -= 5f;
-            if (enemy.Health <= 0)
-            {
-                GameManager.Instance.UpdateScore();
-                Destroy(gameObject);
-            }
+            GameManager.Instance.UpdateScore();
+            Destroy(gameObject);
         }
     }
 }
