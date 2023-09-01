@@ -31,7 +31,7 @@ public class EnemyController : MonoBehaviour
         {
             float distanceToPlayerX = Mathf.Abs(transform.position.x - playerTransform.position.x);
             float distanceToPlayerY = Mathf.Abs(transform.position.y - playerTransform.position.y);
-            if (distanceToPlayerX <= enemy.DetectionRange && distanceToPlayerY > -5f && distanceToPlayerY < 1f) isFollowingPlayer = true;
+            if (distanceToPlayerX <= enemy.DetectionRange && distanceToPlayerY >= 0f && distanceToPlayerY <= 5f) isFollowingPlayer = true;
             else isFollowingPlayer = false;
             if (isFollowingPlayer) FollowPlayer();
             else MoveBetweenPoints();
