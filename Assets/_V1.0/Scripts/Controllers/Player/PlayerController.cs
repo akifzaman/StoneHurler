@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float _maxTilt = .1f;
 	[SerializeField] private float _tiltSpeed = 1;
 	[SerializeField] private float pushForce = 1.5f;
+	[SerializeField] private float bloodSplashDuration = 0.2f;
 
 	[SerializeField] private UnityEngine.Transform targetSprite;
 	[SerializeField] private LayerMask _groundMask;
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
     #endregion
     public Player player = new Player();
 	public bool isOnPlatform;
+	public GameObject bloodSplashAnimation;
 
     private void Awake()
 	{
@@ -184,6 +186,8 @@ public class PlayerController : MonoBehaviour
         if (player.Health <= 0f)
         {
             GameManager.Instance.GameOver();
+			var go = Instantiate(bloodSplashAnimation, transform.position, Quaternion.identity);
+			Destroy(go, bloodSplashDuration);
             gameObject.SetActive(false);
         }
     }
@@ -242,7 +246,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform.CompareTag("Enemy"))
+        if (collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Thorne"))
         {
             var enemy = collision.gameObject.GetComponent<EnemyController>();
 			if (enemy != null)

@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    private float bloodSplashDuration = 0.2f;
     [SerializeField] private Enemy enemy = new Enemy();
     [SerializeField] private bool isFollowingPlayer = false;
     public bool movingRight;
     [SerializeField] private GameObject detectionIcon;
+    [SerializeField] private GameObject bloodSplashAnimation;
     private Vector3 leftPoint;
     private Vector3 rightPoint;
     private Transform playerTransform;
@@ -18,7 +20,7 @@ public class EnemyController : MonoBehaviour
         enemy.MoveSpeed = 20f;
         enemy.JumpSpeed = 20f;
         enemy.DetectionRange = 200f;
-        enemy.MovingDistance = 20f;
+        enemy.MovingDistance = 10f;
     }
     private void Start()
     {
@@ -91,6 +93,9 @@ public class EnemyController : MonoBehaviour
         if (enemy.Health <= 0)
         {
             GameManager.Instance.UpdateScore();
+            bloodSplashAnimation.gameObject.SetActive(true);
+            var go = Instantiate(bloodSplashAnimation, transform.position, Quaternion.identity);
+            Destroy(go, bloodSplashDuration);
             Destroy(gameObject);
         }
     }

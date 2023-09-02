@@ -261,9 +261,9 @@ MonoBehaviour:
     DetectionRange: 0
     MovingDistance: 0
   isFollowingPlayer: 0
-  isDetectionIconVisible: 0
   movingRight: 1
   detectionIcon: {fileID: 8767450154200626328}
+  bloodSplashAnimation: {fileID: 2956820806515277399, guid: 98abf71c70891834988dd2220dc11abe, type: 3}
 --- !u!1 &8455001077390947007
 GameObject:
   m_ObjectHideFlags: 0
