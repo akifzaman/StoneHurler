@@ -1,10 +1,11 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Enemy enemy = new Enemy();
     [SerializeField] private bool isFollowingPlayer = false;
-    [SerializeField] private bool movingRight = true;
+    public bool movingRight;
     [SerializeField] private GameObject detectionIcon;
     private Vector3 leftPoint;
     private Vector3 rightPoint;
@@ -21,6 +22,7 @@ public class EnemyController : MonoBehaviour
     }
     private void Start()
     {
+        movingRight = true;
         playerTransform = FindObjectOfType<PlayerController>()?.transform;
         leftPoint = transform.position - Vector3.right * enemy.MovingDistance;
         rightPoint = transform.position + Vector3.right * enemy.MovingDistance;
@@ -84,11 +86,24 @@ public class EnemyController : MonoBehaviour
     }
     public void OnEnemyTakeDamage()
     {
+        ActivateEnemyRecovery();
         enemy.Health -= 5f;
         if (enemy.Health <= 0)
         {
             GameManager.Instance.UpdateScore();
             Destroy(gameObject);
         }
+    }
+    public void ActivateEnemyRecovery()
+    {
+        enemy.MoveSpeed = 0f;
+        if (movingRight) transform.position -= new Vector3(4f, 0f, 0f);
+        else transform.position += new Vector3(4f, 0f, 0f);
+        StartCoroutine(RestoreSpeed());
+    }
+    IEnumerator RestoreSpeed()
+    {
+        yield return new WaitForSeconds(0.4f);
+        enemy.MoveSpeed = 20f;
     }
 }

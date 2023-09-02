@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviour
 	private Vector2 force;
 	[SerializeField] private float _maxTilt = .1f;
 	[SerializeField] private float _tiltSpeed = 1;
+	[SerializeField] private float pushForce = 1.5f;
 
 	[SerializeField] private UnityEngine.Transform targetSprite;
 	[SerializeField] private LayerMask _groundMask;
@@ -185,6 +187,20 @@ public class PlayerController : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
+    public void ActivatePlayerRecovery(bool value)
+    {
+        player.MoveSpeed = 0f;
+        player.JumpSpeed = 0f;
+		if(value) playerRb.AddForce(Vector2.right * pushForce, ForceMode2D.Impulse);	
+		else playerRb.AddForce(Vector2.left * pushForce, ForceMode2D.Impulse);	
+        StartCoroutine(RestoreSpeed());
+    }
+    IEnumerator RestoreSpeed()
+    {
+        yield return new WaitForSeconds(1f);
+        player.MoveSpeed = 40f;
+        player.JumpSpeed = 50f;
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.transform.CompareTag("Ground"))
@@ -228,6 +244,12 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.transform.CompareTag("Enemy"))
         {
+            var enemy = collision.gameObject.GetComponent<EnemyController>();
+			if (enemy != null)
+			{
+                ActivatePlayerRecovery(enemy.movingRight);
+                enemy.ActivateEnemyRecovery();
+			}
 			OnPlayerTakeDamage(5f);
         }
     }
