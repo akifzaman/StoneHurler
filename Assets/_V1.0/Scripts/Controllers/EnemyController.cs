@@ -5,6 +5,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Enemy enemy = new Enemy();
     [SerializeField] private bool isFollowingPlayer = false;
     [SerializeField] private bool movingRight = true;
+    [SerializeField] private GameObject detectionIcon;
     private Vector3 leftPoint;
     private Vector3 rightPoint;
     private Transform playerTransform;
@@ -34,13 +35,21 @@ public class EnemyController : MonoBehaviour
             if (distanceToPlayerX <= enemy.DetectionRange && distanceToPlayerY >= 0f && distanceToPlayerY <= 5f) isFollowingPlayer = true;
             else isFollowingPlayer = false;
             if (isFollowingPlayer) FollowPlayer();
-            else MoveBetweenPoints();
+            else
+            {
+                detectionIcon.gameObject.SetActive(false);
+                MoveBetweenPoints();
+            }
         }
-        else MoveBetweenPoints();
+        else
+        {
+            detectionIcon.gameObject.SetActive(false);
+            MoveBetweenPoints();
+        }
     }
-
     private void FollowPlayer()
     {
+        detectionIcon.gameObject.SetActive(true);
         Vector2 targetPosition = new Vector2(playerTransform.position.x, transform.position.y);
         if (playerTransform.position.x < transform.position.x) movingRight = false;
         else movingRight = true;

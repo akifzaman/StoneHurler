@@ -39,9 +39,7 @@ public class ItemController : MonoBehaviour
         var enemy = collision.gameObject.GetComponent<EnemyController>();
         if (enemy != null && gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
         {
-            enemy.OnEnemyTakeDamage();
-            //gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(2.5f, 0f);
-            //collision.gameObject.GetComponent<BoxCollider2D>().enabled = false;  
+            enemy.OnEnemyTakeDamage(); 
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

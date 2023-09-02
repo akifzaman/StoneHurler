@@ -175,6 +175,16 @@ public class PlayerController : MonoBehaviour
 			jumpBufferTime = jumpBufferTimeTemp;
 		}
 	}
+	public void OnPlayerTakeDamage(float value)
+	{
+        player.Health -= value;
+        UIManager.Instance.OnPlayerHealthUpdate(player.Health);
+        if (player.Health <= 0f)
+        {
+            GameManager.Instance.GameOver();
+            gameObject.SetActive(false);
+        }
+    }
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.transform.CompareTag("Ground"))
@@ -218,13 +228,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.transform.CompareTag("Enemy"))
         {
-            player.Health -= 5f;
-            UIManager.Instance.OnPlayerHealthUpdate(player.Health);
-            if (player.Health <= 0f)
-            {
-                GameManager.Instance.GameOver();
-                gameObject.SetActive(false);
-            }
+			OnPlayerTakeDamage(5f);
         }
     }
 }
