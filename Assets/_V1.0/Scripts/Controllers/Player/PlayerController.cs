@@ -10,8 +10,8 @@ public class PlayerController : MonoBehaviour
 	private bool appexModifier = true;
 	private bool jumpBuffer = true;
 	private bool coyoteTime = true;
-	private bool clampedFallSpeed = true;
-	private bool juice = true;
+	//private bool clampedFallSpeed = true;
+	//private bool juice = true;
     #endregion
 
     #region Animation Keys

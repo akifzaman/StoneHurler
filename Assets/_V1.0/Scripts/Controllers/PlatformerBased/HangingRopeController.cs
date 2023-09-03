@@ -5,7 +5,7 @@ public class HangingRopeController : MonoBehaviour
     public float oscillationSpeed = 2f;
     public float oscillationAmplitude = 0.5f;
     private Vector3 initialPosition;
-
+    public GameObject ShatterAnimationPrefab;
     private void Start()
     {
         initialPosition = transform.position;
@@ -20,7 +20,9 @@ public class HangingRopeController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Item"))
-        { 
+        {
+            var go = Instantiate(ShatterAnimationPrefab, collision.transform.position, Quaternion.identity);
+            Destroy(go, 0.2f);
             GetComponentInChildren<Rigidbody2D>().gravityScale = 15f;
         }
     }

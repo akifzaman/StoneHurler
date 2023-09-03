@@ -260,3 +260,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   oscillationSpeed: 5
   oscillationAmplitude: 0.6
+  ShatterAnimationPrefab: {fileID: 2433590304990586305, guid: 13978888f7903864faed650ab0b4e3ea, type: 3}

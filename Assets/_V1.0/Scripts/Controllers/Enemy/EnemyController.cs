@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+//Don't override the enemy prefab from the hierarchy without unpackcing
 public class EnemyController : MonoBehaviour
 {
     private float bloodSplashDuration = 0.2f;
@@ -20,7 +21,7 @@ public class EnemyController : MonoBehaviour
         enemy.MoveSpeed = 20f;
         enemy.JumpSpeed = 20f;
         enemy.DetectionRange = 200f;
-        enemy.MovingDistance = 10f;
+        //enemy.MovingDistance should be set from the editor based on the platform size it is currently on
     }
     private void Start()
     {
