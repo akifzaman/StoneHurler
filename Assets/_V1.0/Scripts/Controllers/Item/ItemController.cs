@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ItemController : MonoBehaviour
 {
+    public bool isOnWater;
     private float mass = 5f;
     private float stoneSpeed = 0f;
     private Rigidbody2D rb;
@@ -28,7 +29,7 @@ public class ItemController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("WeightPlatform")) transform.SetParent(collision.transform);
+        if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("WaterTrap")) transform.SetParent(collision.transform);
         else transform.SetParent(null);
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -39,7 +40,7 @@ public class ItemController : MonoBehaviour
         var enemy = collision.gameObject.GetComponent<EnemyController>();
         if (enemy != null && gameObject.GetComponent<Rigidbody2D>().velocity.x != 0)
         {
-            enemy.OnEnemyTakeDamage(); 
+            enemy.OnEnemyTakeDamage(5f); 
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

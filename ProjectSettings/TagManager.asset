@@ -11,6 +11,8 @@ TagManager:
   - Door
   - Thorne
   - Locker
+  - HangingPlatform
+  - WaterTrap
   layers:
   - Default
   - TransparentFX

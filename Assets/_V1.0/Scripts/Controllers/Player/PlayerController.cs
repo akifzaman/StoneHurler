@@ -214,7 +214,7 @@ public class PlayerController : MonoBehaviour
             pressable = true;
             isGrounded = true;
         }
-        if (collision.gameObject.CompareTag("WeightPlatform"))
+        if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))
         {
             pressable = true;
             isGrounded = true;

@@ -86,10 +86,10 @@ public class EnemyController : MonoBehaviour
             transform.localScale = newScale;
         }
     }
-    public void OnEnemyTakeDamage()
+    public void OnEnemyTakeDamage(float value)
     {
         ActivateEnemyRecovery();
-        enemy.Health -= 5f;
+        enemy.Health -= value;
         if (enemy.Health <= 0)
         {
             GameManager.Instance.UpdateScore();
@@ -110,5 +110,9 @@ public class EnemyController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.4f);
         enemy.MoveSpeed = 20f;
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.transform.CompareTag("HangingPlatform")) OnEnemyTakeDamage(10f);
     }
 }
