@@ -10188,6 +10188,10 @@ PrefabInstance:
       value: player
       objectReference: {fileID: 0}
     - target: {fileID: 1271066533546197207, guid: 9980e2de4e207b04cad3be1b175db111, type: 3}
+      propertyPath: player.Health
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271066533546197207, guid: 9980e2de4e207b04cad3be1b175db111, type: 3}
       propertyPath: bloodSplashAnimation
       value: 
       objectReference: {fileID: 2956820806515277399, guid: 98abf71c70891834988dd2220dc11abe, type: 3}

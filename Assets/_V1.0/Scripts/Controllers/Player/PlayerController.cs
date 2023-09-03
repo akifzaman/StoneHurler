@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     #region Animation Keys
     private static readonly int jumpKey = Animator.StringToHash("isPressable");
 	private static readonly int moveKey = Animator.StringToHash("playerSpeed");
+	private static readonly int onDamageKey = Animator.StringToHash("isTakeDamage");
 	#endregion
 
 	#region Variables
@@ -79,7 +80,7 @@ public class PlayerController : MonoBehaviour
 		force = inputActions.player.movement.ReadValue<Vector2>();
 		if (inputActions.player.Jump.IsPressed() && pressable)
 		{
-			_anim.SetBool(jumpKey, !pressable);
+			//_anim.SetBool(jumpKey, !pressable);
             Jump();
 		}
         if (inputActions.player.SingleThrow.WasPressedThisFrame()) //for single stone throw
@@ -134,7 +135,8 @@ public class PlayerController : MonoBehaviour
 				pressable = false;
 				jumpCount = 0;
 			}
-		}
+            _anim.SetBool(jumpKey, !pressable);
+        }
 		else
 		{
 			pressable = false;
@@ -182,6 +184,8 @@ public class PlayerController : MonoBehaviour
 	public void OnPlayerTakeDamage(float value)
 	{
         player.Health -= value;
+		_anim.SetBool(onDamageKey, true);
+		StartCoroutine(RestoreToIdleAnimation());
         UIManager.Instance.OnPlayerHealthUpdate(player.Health);
         if (player.Health <= 0f)
         {
@@ -190,6 +194,11 @@ public class PlayerController : MonoBehaviour
 			Destroy(go, bloodSplashDuration);
             gameObject.SetActive(false);
         }
+    }
+	IEnumerator RestoreToIdleAnimation()
+	{
+		yield return new WaitForSeconds(0.2f);
+        _anim.SetBool(onDamageKey, false);
     }
     public void ActivatePlayerRecoveryFromEnemy(bool value)
     {
