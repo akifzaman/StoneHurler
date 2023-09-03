@@ -191,12 +191,19 @@ public class PlayerController : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
-    public void ActivatePlayerRecovery(bool value)
+    public void ActivatePlayerRecoveryFromEnemy(bool value)
     {
         player.MoveSpeed = 0f;
         player.JumpSpeed = 0f;
 		if(value) playerRb.AddForce(Vector2.right * pushForce, ForceMode2D.Impulse);	
 		else playerRb.AddForce(Vector2.left * pushForce, ForceMode2D.Impulse);	
+        StartCoroutine(RestoreSpeed());
+    }
+    public void ActivatePlayerRecoveryFromObstacles()
+    {
+        player.MoveSpeed = 0f;
+        player.JumpSpeed = 0f;
+        playerRb.AddForce(Vector2.up * pushForce * 5, ForceMode2D.Impulse);
         StartCoroutine(RestoreSpeed());
     }
     IEnumerator RestoreSpeed()
@@ -249,12 +256,17 @@ public class PlayerController : MonoBehaviour
         if (collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Thorne"))
         {
             var enemy = collision.gameObject.GetComponent<EnemyController>();
-			if (enemy != null)
+			var thorne = collision.gameObject.GetComponent<ThorneController>();
+            if (enemy != null)
 			{
-                ActivatePlayerRecovery(enemy.movingRight);
+                ActivatePlayerRecoveryFromEnemy(enemy.movingRight);
                 enemy.ActivateEnemyRecovery();
 			}
-			OnPlayerTakeDamage(5f);
+			if (thorne != null)
+			{
+                ActivatePlayerRecoveryFromObstacles();
+            }
+            OnPlayerTakeDamage(5f);
         }
     }
 }

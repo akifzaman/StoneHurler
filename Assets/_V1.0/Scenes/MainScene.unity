@@ -715,7 +715,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stone: {fileID: 473983797303327254, guid: 61b22f424be9e714e8a8e84019b4894b, type: 3}
   throwPosition: {fileID: 1002893847}
-  speedMultiplier: 1.5
+  speedMultiplier: 15
 --- !u!4 &448991766
 Transform:
   m_ObjectHideFlags: 0

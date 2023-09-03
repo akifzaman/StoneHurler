@@ -126,7 +126,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.01
+  m_Mass: 0.1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 3.5
@@ -161,3 +161,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b4000a35c5af0c4ea3d56e20cd0f4ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isOnWater: 0
