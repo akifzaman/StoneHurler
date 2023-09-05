@@ -9,13 +9,15 @@ public class PickItem : MonoBehaviour, IPickable
         isPickable = true;
         GetComponent<SpriteRenderer>().sprite = item.ItemIcon;
     }
-    public void Pick()
+    public bool Pick()
     {
         if (isPickable)
         {
             Item addedItem = InventoryManager.Instance.AddItemToInventory(item);
             if (addedItem != null) Destroy(gameObject);
+            return true;
         }
+        return false;
     }
 
 }

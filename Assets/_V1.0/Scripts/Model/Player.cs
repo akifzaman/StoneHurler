@@ -1,7 +1,7 @@
 [System.Serializable]
 public class Player
 {
-    public float Health;
+    public int Health;
     public float Mass;
     public float MoveSpeed;
     public float JumpSpeed;

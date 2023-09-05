@@ -42,7 +42,7 @@ public class WaterTrapController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         var player = collision.gameObject.GetComponent<PlayerController>();
-        if (player != null) player.OnPlayerTakeDamage(10f);
+        if (player != null) player.OnPlayerTakeDamage(3, true);
         var stone = collision.gameObject.GetComponent<ItemController>();
         if (stone != null) stone.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         var stonePick = collision.gameObject.GetComponent<PickItem>();

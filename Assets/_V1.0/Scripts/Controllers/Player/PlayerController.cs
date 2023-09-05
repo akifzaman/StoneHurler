@@ -71,7 +71,7 @@ public class PlayerController : MonoBehaviour
 		OnAppexModifierChange(true);
 		playerRb = GetComponent<Rigidbody2D>();
 		gravityScale = playerRb.gravityScale;
-        UIManager.Instance.OnPlayerHealthUpdate(player.Health);
+        //UIManager.Instance.OnPlayerHealthUpdate(player.Health);
     }
     private void OnEnable() => inputActions.Enable();
 	private void OnDisable() => inputActions.Disable();
@@ -181,12 +181,11 @@ public class PlayerController : MonoBehaviour
 			jumpBufferTime = jumpBufferTimeTemp;
 		}
 	}
-	public void OnPlayerTakeDamage(float value)
+	public void OnPlayerTakeDamage(int value, bool isInWater = false)
 	{
         player.Health -= value;
 		_anim.SetBool(onDamageKey, true);
 		StartCoroutine(RestoreToIdleAnimation());
-        UIManager.Instance.OnPlayerHealthUpdate(player.Health);
         if (player.Health <= 0f)
         {
             GameManager.Instance.GameOver();
@@ -194,6 +193,7 @@ public class PlayerController : MonoBehaviour
 			Destroy(go, bloodSplashDuration);
             gameObject.SetActive(false);
         }
+        UIManager.Instance.OnPlayerHealthUpdate(player.Health + 1, isInWater);
     }
 	IEnumerator RestoreToIdleAnimation()
 	{
@@ -240,12 +240,15 @@ public class PlayerController : MonoBehaviour
         {
             pressable = true;
             isGrounded = true;
-            if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
-            {
-                player.Mass += 10f;
-            }
             IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
-            iPickable?.Pick();
+            var isPickUpSuccess = iPickable?.Pick();
+			if (isPickUpSuccess != null && isPickUpSuccess == true)
+			{
+                if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
+                {
+                    player.Mass += 10f;
+                }
+            }
         }
         if (collision.gameObject.CompareTag("Door"))
         {
@@ -275,7 +278,7 @@ public class PlayerController : MonoBehaviour
 			{
                 ActivatePlayerRecoveryFromObstacles();
             }
-            OnPlayerTakeDamage(5f);
+            OnPlayerTakeDamage(1);
         }
     }
 }
