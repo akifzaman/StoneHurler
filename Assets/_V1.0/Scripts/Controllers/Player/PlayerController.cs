@@ -71,7 +71,6 @@ public class PlayerController : MonoBehaviour
 		OnAppexModifierChange(true);
 		playerRb = GetComponent<Rigidbody2D>();
 		gravityScale = playerRb.gravityScale;
-        //UIManager.Instance.OnPlayerHealthUpdate(player.Health);
     }
     private void OnEnable() => inputActions.Enable();
 	private void OnDisable() => inputActions.Disable();
@@ -80,14 +79,12 @@ public class PlayerController : MonoBehaviour
 		force = inputActions.player.movement.ReadValue<Vector2>();
 		if (inputActions.player.Jump.IsPressed() && pressable)
 		{
-			//_anim.SetBool(jumpKey, !pressable);
             Jump();
 		}
         if (inputActions.player.SingleThrow.WasPressedThisFrame()) //for single stone throw
         {
 			if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) 
 			{ 
-				//player.Mass -= 10f;
 				player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
                 UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
             }
@@ -252,7 +249,6 @@ public class PlayerController : MonoBehaviour
 			{
                 if (InventoryManager.Instance.inventory.Items.Count <= InventoryManager.Instance.inventoryCapacity)
                 {
-                    //player.Mass += 10f;
                     player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
                     UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
                 }

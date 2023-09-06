@@ -38,7 +38,7 @@ public partial class @Movement: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Jump"",
-                    ""type"": ""Value"",
+                    ""type"": ""Button"",
                     ""id"": ""9a182543-d826-4734-a325-0d5995a0649d"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
