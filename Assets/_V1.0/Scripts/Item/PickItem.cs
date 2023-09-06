@@ -14,8 +14,11 @@ public class PickItem : MonoBehaviour, IPickable
         if (isPickable)
         {
             Item addedItem = InventoryManager.Instance.AddItemToInventory(item);
-            if (addedItem != null) Destroy(gameObject);
-            return true;
+            if (addedItem != null)
+            {
+                Destroy(gameObject);
+                return true;
+            }
         }
         return false;
     }

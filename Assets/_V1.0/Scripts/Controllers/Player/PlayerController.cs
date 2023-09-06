@@ -87,18 +87,19 @@ public class PlayerController : MonoBehaviour
         {
 			if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) 
 			{ 
-				player.Mass -= 10f;
+				//player.Mass -= 10f;
+				player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
                 UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
             }
         }
-        if (inputActions.player.MultipleThrow.IsPressed()) //for multiple stone throw
-        {
-			if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
-			{
-				player.Mass -= 10f; 
-				UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
-            }
-        }
+		// (inputActions.player.MultipleThrow.IsPressed()) //for multiple stone throw
+		//{
+			//if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
+			//{
+			//	player.Mass -= 10f; 
+			//	UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
+		//}
+		//}
         var targetRotVector = new Vector3(0, 0, Mathf.Lerp(-_maxTilt, _maxTilt, Mathf.InverseLerp(-1, 1, force.x)));
 		targetSprite.rotation = Quaternion.RotateTowards(targetSprite.rotation, Quaternion.Euler(targetRotVector), _tiltSpeed * Time.deltaTime);
 		var groundHit = Physics2D.Raycast(transform.position, Vector3.down, 2, _groundMask);
@@ -249,9 +250,10 @@ public class PlayerController : MonoBehaviour
             var isPickUpSuccess = iPickable?.Pick();
 			if (isPickUpSuccess != null && isPickUpSuccess == true)
 			{
-                if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
+                if (InventoryManager.Instance.inventory.Items.Count <= InventoryManager.Instance.inventoryCapacity)
                 {
-                    player.Mass += 10f;
+                    //player.Mass += 10f;
+                    player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
                     UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
                 }
             }
@@ -286,5 +288,9 @@ public class PlayerController : MonoBehaviour
             }
             OnPlayerTakeDamage(1);
         }
+		if (collision.transform.CompareTag("WaterRemovalButton"))
+		{
+			GameManager.Instance.OnWaterRemove.Invoke();
+		}
     }
 }

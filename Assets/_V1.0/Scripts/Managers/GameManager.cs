@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -6,6 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public bool isGameOver;
     public float Score;
+    public UnityEvent OnWaterRemove;
     #region Singleton
     public void Awake()
     {
