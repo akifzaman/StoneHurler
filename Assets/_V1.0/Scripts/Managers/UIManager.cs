@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI StoneCountText;
     public List<GameObject> HealthIcons;
     public GameObject GameOverPanel;
-
+    public Slider WeightSlider;
     #region Singleton
     public void Awake()
     {
@@ -17,7 +18,7 @@ public class UIManager : MonoBehaviour
         else Destroy(Instance);
     }
     #endregion
-    public void OnPlayerHealthUpdate(int value, bool isInWater = false)
+    public void OnPlayerHealthUpdated(int value, bool isInWater = false)
     {
         if (isInWater)
         {
@@ -29,8 +30,12 @@ public class UIManager : MonoBehaviour
         }
         HealthIcons[value - 1].SetActive(false);
     }
-    public void OnScoreUpdate(float value) => ScoreText.text = $"Score: {value}";
-    public void OnStoneCountUpdate(int value) => StoneCountText.text = $"x{value}";
+    public void OnScoreUpdated(float value) => ScoreText.text = $"Score: {value}";
+    public void OnStoneCountUpdated(int value) => StoneCountText.text = $"x{value}";
+    public void OnPlayerWeightUpdated(float value)
+    {
+        WeightSlider.value = value;
+    }
 
 
 }

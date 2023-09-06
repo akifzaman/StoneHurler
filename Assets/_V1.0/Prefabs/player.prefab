@@ -28,7 +28,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271066533546197200}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.7, y: 6.69, z: 0}
   m_LocalScale: {x: 4.5, y: 4.5, z: 4.5}
   m_ConstrainProportionsScale: 1
@@ -153,6 +153,8 @@ MonoBehaviour:
   verticalSpeed: 40
   _maxTilt: 1
   _tiltSpeed: 70
+  pushForce: 1.5
+  bloodSplashDuration: 0.2
   targetSprite: {fileID: 1271066533546197195}
   _groundMask:
     serializedVersion: 2
@@ -165,12 +167,13 @@ MonoBehaviour:
   isGrounded: 1
   pressable: 1
   player:
-    Health: 10
+    Health: 3
     Mass: 10
     MoveSpeed: 40
     JumpSpeed: 50
     Damage: 10
   isOnPlatform: 0
+  bloodSplashAnimation: {fileID: 2956820806515277399, guid: 98abf71c70891834988dd2220dc11abe, type: 3}
 --- !u!95 &1271066533546197194
 Animator:
   serializedVersion: 5

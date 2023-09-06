@@ -85,14 +85,19 @@ public class PlayerController : MonoBehaviour
 		}
         if (inputActions.player.SingleThrow.WasPressedThisFrame()) //for single stone throw
         {
-            if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) player.Mass -= 10f;
+			if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) 
+			{ 
+				player.Mass -= 10f;
+                UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
+            }
         }
         if (inputActions.player.MultipleThrow.IsPressed()) //for multiple stone throw
         {
 			if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
 			{
-				player.Mass -= 10f;
-			}
+				player.Mass -= 10f; 
+				UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
+            }
         }
         var targetRotVector = new Vector3(0, 0, Mathf.Lerp(-_maxTilt, _maxTilt, Mathf.InverseLerp(-1, 1, force.x)));
 		targetSprite.rotation = Quaternion.RotateTowards(targetSprite.rotation, Quaternion.Euler(targetRotVector), _tiltSpeed * Time.deltaTime);
@@ -193,7 +198,7 @@ public class PlayerController : MonoBehaviour
 			Destroy(go, bloodSplashDuration);
             gameObject.SetActive(false);
         }
-        UIManager.Instance.OnPlayerHealthUpdate(player.Health + 1, isInWater);
+        UIManager.Instance.OnPlayerHealthUpdated(player.Health + 1, isInWater);
     }
 	IEnumerator RestoreToIdleAnimation()
 	{
@@ -247,6 +252,7 @@ public class PlayerController : MonoBehaviour
                 if (InventoryManager.Instance.inventory.Items.Count < InventoryManager.Instance.inventoryCapacity)
                 {
                     player.Mass += 10f;
+                    UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
                 }
             }
         }
