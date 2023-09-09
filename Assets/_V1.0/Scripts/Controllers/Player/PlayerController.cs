@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,9 +15,9 @@ public class PlayerController : MonoBehaviour
     #region Variables
     //[SerializeField] private AudioSource _source;
     [SerializeField] private Animator _anim;
-    [SerializeField] private float speedFactor = .1f;
     [SerializeField] private float verticalSpeed = 30f;
-    [SerializeField] private float accelaration = 2f;
+    [SerializeField] private float accelaration = 0.098f;
+    [SerializeField] private float jumpBufferTime;
     private Movement inputActions;
     private Rigidbody2D playerRb;
     private Vector2 force;
@@ -26,22 +27,26 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private LayerMask _groundMask;
 
-    [SerializeField] private float jumpBufferTime;
     private float lastGrounded = 0;
     private float lastGroundExit = 0;
-    [SerializeField] private float coyoteTimeValue = 1;
+    [SerializeField] private float coyoteTimeValue;
     private float gravityScale;
     #endregion
     public Player player = new Player();
     public bool isOnPlatform;
     public GameObject bloodSplashAnimation;
     private Vector3 velocity = Vector3.zero;
+    private Vector2 currentDirection = Vector2.zero;
+    private Vector2 prevDirection = Vector2.zero;
+    [SerializeField] private float modifiedVelocity;
+    [SerializeField] private int counter = 0;
+    [SerializeField] private bool isDoubleJumpAllowed = true;
 
     private void Awake()
     {
         inputActions = new Movement();
         inputActions.player.Jump.performed += Jump;
-        inputActions.player.Jump.canceled -= Jump;
+        inputActions.player.Jump.canceled -=  Jump;
     }
     private void Start()
     {
@@ -54,6 +59,14 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         force = inputActions.player.movement.ReadValue<Vector2>();
+        currentDirection = new Vector2(force.x, force.y);
+        if (currentDirection != prevDirection)
+        {
+            counter /= 2;
+            modifiedVelocity = 0;
+        }
+        prevDirection = currentDirection;
+              
         if (inputActions.player.SingleThrow.WasPressedThisFrame())
         {
             if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
@@ -62,7 +75,6 @@ public class PlayerController : MonoBehaviour
                 UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
             }
         }
-        var groundHit = Physics2D.Raycast(transform.position, Vector3.down, 10f, _groundMask);
         isOnPlatform = IsOnPlatform();
     }
     private bool IsOnPlatform()
@@ -79,19 +91,16 @@ public class PlayerController : MonoBehaviour
     {
         Move(force);
     }
-    private float modifiedVelocity;
     public void Move(Vector3 force)
     {
         if (force != Vector3.zero)
         {
-            modifiedVelocity = player.MoveSpeed + accelaration / 30 * Time.time;
+            counter++;
+            modifiedVelocity = player.MoveSpeed * (1 + (accelaration * counter / 1000) + (counter / 100));
             modifiedVelocity = Mathf.Clamp(modifiedVelocity, 0, 60);
-            Debug.Log("V:"+ modifiedVelocity);
             bool faceRight = force.x >= 0;
             SetFacingDirection(faceRight);
         }
-        else if(force == Vector3.zero) modifiedVelocity = player.MoveSpeed;
-
         _anim.SetFloat(moveKey, force.magnitude);
         Vector3 targetVelocity = new Vector2(force.x * modifiedVelocity, playerRb.velocity.y);
         playerRb.velocity = Vector3.SmoothDamp(playerRb.velocity, targetVelocity, ref velocity, velocityDampning);
@@ -106,15 +115,27 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
-        Debug.Log("J:" + verticalSpeed + (verticalSpeed * (modifiedVelocity / 20)));
-        playerRb.AddForce(new Vector2(0, verticalSpeed + (verticalSpeed * (modifiedVelocity / 200))));
-        _anim.SetBool(jumpKey, !IsGrounded());       
+        playerRb.AddForce(new Vector2(0, verticalSpeed + (modifiedVelocity / 1.5f)));
+        _anim.SetBool(jumpKey, !IsGrounded());
+    }
+    public void DoubleJump()
+    {
+        isDoubleJumpAllowed = false;
+        playerRb.velocity = new Vector2(playerRb.velocity.x,0);
+        playerRb.AddForce(new Vector2(0, verticalSpeed/1.25f));
+        _anim.SetBool(jumpKey, !IsGrounded());
     }
     public void Jump(InputAction.CallbackContext callbackContext)
     {
         transform.SetParent(null);
-        if (callbackContext.performed && (IsGrounded() || ((Time.time - lastGroundExit) <= coyoteTimeValue)) && (Time.time - lastGrounded) >= jumpBufferTime)
-            Jump();       
+        if (callbackContext.performed && (IsGrounded() || (Time.time - lastGroundExit <= coyoteTimeValue)))
+        {
+            Jump();
+        }
+        else if (callbackContext.performed && isDoubleJumpAllowed)
+        {
+            DoubleJump();
+        }
     }
     public void Move(InputAction.CallbackContext callbackContext)
     {
@@ -165,7 +186,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground")) lastGrounded = Time.time;       
+        isDoubleJumpAllowed = true;
         if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))        
             transform.SetParent(collision.transform);        
         if (collision.gameObject.CompareTag("Item"))
@@ -200,7 +221,7 @@ public class PlayerController : MonoBehaviour
             }
             if (thorne != null) ActivatePlayerRecoveryFromObstacles();
             
-            //OnPlayerTakeDamage(1);
+            OnPlayerTakeDamage(1);
         }
         if (collision.transform.CompareTag("WaterRemovalButton")) GameManager.Instance.OnWaterRemove.Invoke();
     }
