@@ -4,102 +4,65 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    #region Configurations
-    [Header("Configuration")]
-	private bool variableJumpHeight = true;
-	private bool appexModifier = true;
-	private bool jumpBuffer = true;
-	private bool coyoteTime = true;
-	//private bool clampedFallSpeed = true;
-	//private bool juice = true;
+    #region Animation Keys
+    private static readonly int jumpKey = Animator.StringToHash("IsJumping");
+    private static readonly int doubleJumpKey = Animator.StringToHash("IsDoubleJumping");
+    private static readonly int moveKey = Animator.StringToHash("Speed");
+    private static readonly int onDamageKey = Animator.StringToHash("IsTakeDamage");
     #endregion
 
-    #region Animation Keys
-    private static readonly int jumpKey = Animator.StringToHash("isPressable");
-	private static readonly int moveKey = Animator.StringToHash("playerSpeed");
-	private static readonly int onDamageKey = Animator.StringToHash("isTakeDamage");
-	#endregion
+    #region Variables
+    //[SerializeField] private AudioSource _source;
+    [SerializeField] private Animator _anim;
+    [SerializeField] private float speedFactor = .1f;
+    [SerializeField] private float verticalSpeed = 30f;
+    [SerializeField] private float accelaration = 2f;
+    private Movement inputActions;
+    private Rigidbody2D playerRb;
+    private Vector2 force;
+    [SerializeField] private float pushForce = 1.5f;
+    [SerializeField] private float velocityDampning = 0.12f;
+    [SerializeField] private float bloodSplashDuration = 0.2f;
 
-	#region Variables
-	[SerializeField] private Animator _anim;
-	//[SerializeField] private AudioSource _source;
-	[SerializeField] private float speedFactor = .1f;
-	[SerializeField] private float verticalSpeed = 30f;
-	private float verticalSpeedTemp = 30f;
-	private Movement inputActions;
-	private Rigidbody2D playerRb;
-	private Vector2 force;
-	[SerializeField] private float _maxTilt = .1f;
-	[SerializeField] private float _tiltSpeed = 1;
-	[SerializeField] private float pushForce = 1.5f;
-	[SerializeField] private float bloodSplashDuration = 0.2f;
+    [SerializeField] private LayerMask _groundMask;
 
-	[SerializeField] private UnityEngine.Transform targetSprite;
-	[SerializeField] private LayerMask _groundMask;
-	
-	private float jumpCount;
-	[SerializeField] private float maxJump;
-	[SerializeField] private float variableJumpHeightValue;
-	[SerializeField] private float jumpBufferTime;
-	[SerializeField] private float apexThresold;
-	private float applyApexTime;
-	private float jumpBufferTimeTemp;
-	private float lastGrounded = 0;
-	private float lastGroundExit = 0;
-	[SerializeField] private float coyoteTimeValue = 1;
-	private float maxJumpTemp;
-	[SerializeField] private bool isGrounded = true;
-	[SerializeField] private bool pressable = true;
-	private float gravityScale;
+    [SerializeField] private float jumpBufferTime;
+    private float lastGrounded = 0;
+    private float lastGroundExit = 0;
+    [SerializeField] private float coyoteTimeValue = 1;
+    private float gravityScale;
     #endregion
     public Player player = new Player();
-	public bool isOnPlatform;
-	public GameObject bloodSplashAnimation;
+    public bool isOnPlatform;
+    public GameObject bloodSplashAnimation;
+    private Vector3 velocity = Vector3.zero;
 
     private void Awake()
-	{
-		inputActions = new Movement();
-	}
-	private void Start()
-	{
-		maxJumpTemp = maxJump;
-		verticalSpeedTemp = verticalSpeed;
-		jumpBufferTimeTemp = jumpBufferTime;
-		lastGrounded = Time.time;
-		OnVariableJumpHeightChange(true);
-		OnJumpBufferChange(true);
-		OnAppexModifierChange(true);
-		playerRb = GetComponent<Rigidbody2D>();
-		gravityScale = playerRb.gravityScale;
+    {
+        inputActions = new Movement();
+        inputActions.player.Jump.performed += Jump;
+        inputActions.player.Jump.canceled -= Jump;
+    }
+    private void Start()
+    {
+        lastGrounded = Time.time;
+        playerRb = GetComponent<Rigidbody2D>();
+        gravityScale = playerRb.gravityScale;
     }
     private void OnEnable() => inputActions.Enable();
-	private void OnDisable() => inputActions.Disable();
-	private void Update()
-	{
-		force = inputActions.player.movement.ReadValue<Vector2>();
-		if (inputActions.player.Jump.IsPressed() && pressable)
-		{
-            Jump();
-		}
-        if (inputActions.player.SingleThrow.WasPressedThisFrame()) //for single stone throw
+    private void OnDisable() => inputActions.Disable();
+    private void Update()
+    {
+        force = inputActions.player.movement.ReadValue<Vector2>();
+        if (inputActions.player.SingleThrow.WasPressedThisFrame())
         {
-			if (SpawnManager.Instance.ThrowStone(transform.localScale.x)) 
-			{ 
-				player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
+            if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
+            {
+                player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
                 UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
             }
         }
-		// (inputActions.player.MultipleThrow.IsPressed()) //for multiple stone throw
-		//{
-			//if (SpawnManager.Instance.ThrowStone(transform.localScale.x))
-			//{
-			//	player.Mass -= 10f; 
-			//	UIManager.Instance.OnPlayerWeightUpdated(player.Mass);
-		//}
-		//}
-        var targetRotVector = new Vector3(0, 0, Mathf.Lerp(-_maxTilt, _maxTilt, Mathf.InverseLerp(-1, 1, force.x)));
-		targetSprite.rotation = Quaternion.RotateTowards(targetSprite.rotation, Quaternion.Euler(targetRotVector), _tiltSpeed * Time.deltaTime);
-		var groundHit = Physics2D.Raycast(transform.position, Vector3.down, 2, _groundMask);
+        var groundHit = Physics2D.Raycast(transform.position, Vector3.down, 10f, _groundMask);
         isOnPlatform = IsOnPlatform();
     }
     private bool IsOnPlatform()
@@ -107,108 +70,84 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, LayerMask.GetMask("WeightPlatform"));
         return hit.collider != null;
     }
-	private void FixedUpdate()
-	{
-		Move(force);
-	}
-	public void Move(Vector3 force)
-	{
-		if (force.magnitude > 0)
-		{
-			_anim.SetFloat(moveKey, force.magnitude);
-			transform.position = Vector2.Lerp(transform.position, transform.position + force * speedFactor, Time.deltaTime);
-			transform.localScale = new Vector3(force.x >= 0 ? Mathf.Abs(transform.localScale.x) : Mathf.Abs(transform.localScale.x) * -1, transform.localScale.y, transform.localScale.z);
-			if (appexModifier && !isGrounded)
-			{
-				float apexPoint = Mathf.InverseLerp(.5f, 0, playerRb.velocity.y);
-				if (apexPoint > 0 && applyApexTime <= apexThresold) applyApexTime += Time.deltaTime;	
-			}
-		}
-        else _anim.SetFloat(moveKey, 0);
+    private bool IsGrounded()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, _groundMask);
+        return hit.collider != null;
     }
-    public void Jump()
-	{
-		jumpCount++;
-		if (jumpCount <= maxJump)
-		{
-			if (variableJumpHeight) playerRb.AddForce(new Vector2(0, verticalSpeed));
-			else
-			{
-				playerRb.AddForce(new Vector2(0, variableJumpHeightValue));
-				pressable = false;
-				jumpCount = 0;
-			}
-            _anim.SetBool(jumpKey, !pressable);
+    private void FixedUpdate()
+    {
+        Move(force);
+    }
+    private float modifiedVelocity;
+    public void Move(Vector3 force)
+    {
+        if (force != Vector3.zero)
+        {
+            modifiedVelocity = player.MoveSpeed + accelaration / 30 * Time.time;
+            modifiedVelocity = Mathf.Clamp(modifiedVelocity, 0, 60);
+            Debug.Log("V:"+ modifiedVelocity);
+            bool faceRight = force.x >= 0;
+            SetFacingDirection(faceRight);
         }
-		else
-		{
-			pressable = false;
-			_anim.SetBool(jumpKey, !pressable);
-			jumpCount = 0;
-		}
-	}
-	public void Jump(InputAction.CallbackContext callbackContext)
-	{
+        else if(force == Vector3.zero) modifiedVelocity = player.MoveSpeed;
+
+        _anim.SetFloat(moveKey, force.magnitude);
+        Vector3 targetVelocity = new Vector2(force.x * modifiedVelocity, playerRb.velocity.y);
+        playerRb.velocity = Vector3.SmoothDamp(playerRb.velocity, targetVelocity, ref velocity, velocityDampning);
+        
+        if (force.magnitude > 0) _anim.SetFloat(moveKey, force.magnitude);       
+        else _anim.SetFloat(moveKey, 0);       
+    }
+    private void SetFacingDirection(bool faceRight)
+    {
+        transform.localScale = new Vector3(faceRight ? Mathf.Abs(transform.localScale.x) : -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+    }
+
+    public void Jump()
+    {
+        Debug.Log("J:" + verticalSpeed + (verticalSpeed * (modifiedVelocity / 20)));
+        playerRb.AddForce(new Vector2(0, verticalSpeed + (verticalSpeed * (modifiedVelocity / 200))));
+        _anim.SetBool(jumpKey, !IsGrounded());       
+    }
+    public void Jump(InputAction.CallbackContext callbackContext)
+    {
         transform.SetParent(null);
-        if (callbackContext.performed && (isGrounded || (coyoteTime && (Time.time - lastGroundExit) <= coyoteTimeValue)) && (Time.time - lastGrounded) >= jumpBufferTime)
-		{
-			pressable = true;
-		}
-		else if (callbackContext.canceled) pressable = false;	
-	}
-	public void Move(InputAction.CallbackContext callbackContext)
-	{
-		if (callbackContext.canceled)
-		{
-			playerRb.velocity = new Vector2(force.x, player.MoveSpeed);
-			applyApexTime = 0;
-		}
-	}
-	public void OnVariableJumpHeightChange(bool value)
-	{
-		variableJumpHeight = value;
-	}
-	public void OnAppexModifierChange(bool value)
-	{
-		appexModifier = value;
-	}
-	public void OnJumpBufferChange(bool value)
-	{
-		jumpBuffer = value;
-		if (jumpBuffer)
-		{
-			jumpBufferTime = 0;
-		}
-		else
-		{
-			jumpBufferTime = jumpBufferTimeTemp;
-		}
-	}
-	public void OnPlayerTakeDamage(int value, bool isInWater = false)
-	{
+        if (callbackContext.performed && (IsGrounded() || ((Time.time - lastGroundExit) <= coyoteTimeValue)) && (Time.time - lastGrounded) >= jumpBufferTime)
+            Jump();       
+    }
+    public void Move(InputAction.CallbackContext callbackContext)
+    {
+        if (callbackContext.canceled)
+        {
+            playerRb.velocity = new Vector2(force.x, player.MoveSpeed);
+        }
+    }
+    public void OnPlayerTakeDamage(int value, bool isInWater = false)
+    {
         player.Health -= value;
-		_anim.SetBool(onDamageKey, true);
-		StartCoroutine(RestoreToIdleAnimation());
+        _anim.SetBool(onDamageKey, true);
+        StartCoroutine(RestoreToIdleAnimation());
         if (player.Health <= 0f)
         {
             GameManager.Instance.GameOver();
-			var go = Instantiate(bloodSplashAnimation, transform.position, Quaternion.identity);
-			Destroy(go, bloodSplashDuration);
+            var go = Instantiate(bloodSplashAnimation, transform.position, Quaternion.identity);
+            Destroy(go, bloodSplashDuration);
             gameObject.SetActive(false);
         }
         UIManager.Instance.OnPlayerHealthUpdated(player.Health + 1, isInWater);
     }
-	IEnumerator RestoreToIdleAnimation()
-	{
-		yield return new WaitForSeconds(0.2f);
+    IEnumerator RestoreToIdleAnimation()
+    {
+        yield return new WaitForSeconds(0.2f);
         _anim.SetBool(onDamageKey, false);
     }
     public void ActivatePlayerRecoveryFromEnemy(bool value)
     {
         player.MoveSpeed = 0f;
         player.JumpSpeed = 0f;
-		if(value) playerRb.AddForce(Vector2.right * pushForce, ForceMode2D.Impulse);	
-		else playerRb.AddForce(Vector2.left * pushForce, ForceMode2D.Impulse);	
+        if (value) playerRb.AddForce(Vector2.right * pushForce, ForceMode2D.Impulse);
+        else playerRb.AddForce(Vector2.left * pushForce, ForceMode2D.Impulse);
         StartCoroutine(RestoreSpeed());
     }
     public void ActivatePlayerRecoveryFromObstacles()
@@ -220,33 +159,21 @@ public class PlayerController : MonoBehaviour
     }
     IEnumerator RestoreSpeed()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
         player.MoveSpeed = 40f;
         player.JumpSpeed = 50f;
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground"))
-        {
-            lastGrounded = Time.time;
-            jumpCount = 0;
-            pressable = true;
-            isGrounded = true;
-        }
-        if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))
-        {
-            pressable = true;
-            isGrounded = true;
-            transform.SetParent(collision.transform);
-        }
+        if (collision.transform.CompareTag("Ground")) lastGrounded = Time.time;       
+        if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))        
+            transform.SetParent(collision.transform);        
         if (collision.gameObject.CompareTag("Item"))
         {
-            pressable = true;
-            isGrounded = true;
             IPickable iPickable = collision.gameObject.GetComponent<IPickable>();
             var isPickUpSuccess = iPickable?.Pick();
-			if (isPickUpSuccess != null && isPickUpSuccess == true)
-			{
+            if (isPickUpSuccess != null && isPickUpSuccess == true)
+            {
                 if (InventoryManager.Instance.inventory.Items.Count <= InventoryManager.Instance.inventoryCapacity)
                 {
                     player.Mass = 10 + InventoryManager.Instance.inventory.Items.Count * 10;
@@ -254,39 +181,27 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        if (collision.gameObject.CompareTag("Door"))
-        {
-            GameManager.Instance.GameOver();
-        }
+        if (collision.gameObject.CompareTag("Door")) GameManager.Instance.GameOver();       
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            lastGroundExit = Time.time;
-        }
+        if (collision.transform.CompareTag("Ground")) lastGroundExit = Time.time;       
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.transform.CompareTag("Enemy") || collision.transform.CompareTag("Thorne"))
         {
             var enemy = collision.gameObject.GetComponent<EnemyController>();
-			var thorne = collision.gameObject.GetComponent<ThorneController>();
+            var thorne = collision.gameObject.GetComponent<ThorneController>();
             if (enemy != null)
-			{
+            {
                 ActivatePlayerRecoveryFromEnemy(enemy.movingRight);
                 enemy.ActivateEnemyRecovery();
-			}
-			if (thorne != null)
-			{
-                ActivatePlayerRecoveryFromObstacles();
             }
-            OnPlayerTakeDamage(1);
+            if (thorne != null) ActivatePlayerRecoveryFromObstacles();
+            
+            //OnPlayerTakeDamage(1);
         }
-		if (collision.transform.CompareTag("WaterRemovalButton"))
-		{
-			GameManager.Instance.OnWaterRemove.Invoke();
-		}
+        if (collision.transform.CompareTag("WaterRemovalButton")) GameManager.Instance.OnWaterRemove.Invoke();
     }
 }
