@@ -43,7 +43,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isDoubleJumpAllowed = true;
     [SerializeField] private float momentBeforeGroundHit = 0f;
     [SerializeField] private float momentOfJump = 0f;
-    [SerializeField] private float jumpBufferTime;
 
     private void Awake()
     {
@@ -81,7 +80,7 @@ public class PlayerController : MonoBehaviour
         isOnPlatform = IsOnPlatform();
         if (IsGrounded())
         {
-            momentBeforeGroundHit = Time.time;
+            momentBeforeGroundHit = Time.time % 100;
         }
     }
     private bool IsOnPlatform()
@@ -122,7 +121,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
-        momentOfJump = Time.time;
+        momentOfJump = Time.time % 100;
         playerRb.AddForce(new Vector2(0, verticalSpeed + (modifiedVelocity / 1.5f)));
         _anim.SetBool(jumpKey, !IsGrounded());
     }
