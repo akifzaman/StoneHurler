@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator _anim;
     [SerializeField] private float verticalSpeed = 30f;
     [SerializeField] private float accelaration = 0.098f;
-    [SerializeField] private float jumpBufferTime;
+   
     private Movement inputActions;
     private Rigidbody2D playerRb;
     private Vector2 force;
@@ -41,6 +41,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float modifiedVelocity;
     [SerializeField] private int counter = 0;
     [SerializeField] private bool isDoubleJumpAllowed = true;
+    [SerializeField] private float momentBeforeGroundHit = 0f;
+    [SerializeField] private float momentOfJump = 0f;
+    [SerializeField] private float jumpBufferTime;
 
     private void Awake()
     {
@@ -76,6 +79,10 @@ public class PlayerController : MonoBehaviour
             }
         }
         isOnPlatform = IsOnPlatform();
+        if (IsGrounded())
+        {
+            momentBeforeGroundHit = Time.time;
+        }
     }
     private bool IsOnPlatform()
     {
@@ -115,6 +122,7 @@ public class PlayerController : MonoBehaviour
 
     public void Jump()
     {
+        momentOfJump = Time.time;
         playerRb.AddForce(new Vector2(0, verticalSpeed + (modifiedVelocity / 1.5f)));
         _anim.SetBool(jumpKey, !IsGrounded());
     }
@@ -128,8 +136,11 @@ public class PlayerController : MonoBehaviour
     public void Jump(InputAction.CallbackContext callbackContext)
     {
         transform.SetParent(null);
-        if (callbackContext.performed && (IsGrounded() || (Time.time - lastGroundExit <= coyoteTimeValue)))
+        if (callbackContext.performed && (IsGrounded() || (Time.time - lastGroundExit <= coyoteTimeValue) ||
+            (momentBeforeGroundHit - momentOfJump) >= 1.5f && (momentBeforeGroundHit - momentOfJump) <= 1.55f))
         {
+            playerRb.velocity = new Vector2(playerRb.velocity.x, 0f);    
+            isDoubleJumpAllowed = true;
             Jump();
         }
         else if (callbackContext.performed && isDoubleJumpAllowed)
@@ -186,7 +197,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        isDoubleJumpAllowed = true;
+        //isDoubleJumpAllowed = true;
         if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))        
             transform.SetParent(collision.transform);        
         if (collision.gameObject.CompareTag("Item"))
