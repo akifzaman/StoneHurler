@@ -6,7 +6,7 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance;
     public Inventory inventory = new Inventory();
     public int inventoryCapacity;
-
+    public GameObject Locker;
     #region Singleton
     public void Awake()
     {
@@ -14,7 +14,13 @@ public class InventoryManager : MonoBehaviour
         else Destroy(this.gameObject);
     }
     #endregion
-
+    public void Update()
+    {
+        if (inventory.Items.Count >= 5)
+        {
+            if(Locker != null) Locker.SetActive(false);
+        }
+    }
     public Item AddItemToInventory(Item item)
     {
         if (inventory.Items.Count >= inventoryCapacity) return null;
