@@ -7,7 +7,7 @@ public class PickItem : MonoBehaviour, IPickable
     private void Start()
     {
         isPickable = true;
-        GetComponent<SpriteRenderer>().sprite = item.ItemIcon;
+        //GetComponent<SpriteRenderer>().sprite = item.ItemIcon;
     }
     public bool Pick()
     {

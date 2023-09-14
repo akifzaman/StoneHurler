@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float momentBeforeGroundHit = 0f;
     [SerializeField] private float momentOfJump = 0f;
 
+    private int waterRemovalButtonCount = 0;
+
     private void Awake()
     {
         inputActions = new Movement();
@@ -233,6 +235,11 @@ public class PlayerController : MonoBehaviour
             
             OnPlayerTakeDamage(1);
         }
-        if (collision.transform.CompareTag("WaterRemovalButton")) GameManager.Instance.OnWaterRemove.Invoke();
+        if (collision.transform.CompareTag("WaterRemovalButton"))
+        {
+            waterRemovalButtonCount++;
+            Destroy(collision.transform.gameObject);
+            if(waterRemovalButtonCount >= 4) GameManager.Instance.OnWaterRemove.Invoke();
+        }
     }
 }

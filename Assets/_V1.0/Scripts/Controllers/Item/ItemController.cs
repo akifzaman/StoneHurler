@@ -43,10 +43,6 @@ public class ItemController : MonoBehaviour
         {
             enemy.OnEnemyTakeDamage(5f); 
         }
-        if (collision.transform.CompareTag("WaterRemovalButton"))
-        {
-            GameManager.Instance.OnWaterRemove.Invoke();
-}
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
