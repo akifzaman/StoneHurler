@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class PlayerController : MonoBehaviour
 {
@@ -198,7 +197,6 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //isDoubleJumpAllowed = true;
         if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))        
             transform.SetParent(collision.transform);        
         if (collision.gameObject.CompareTag("Item"))
@@ -214,7 +212,6 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        if (collision.gameObject.CompareTag("Door")) GameManager.Instance.GameOver();       
     }
     private void OnCollisionExit2D(Collision2D collision)
     {

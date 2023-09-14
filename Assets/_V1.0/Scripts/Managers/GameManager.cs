@@ -2,21 +2,34 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public bool isGameOver;
     public float Score;
     public UnityEvent OnWaterRemove;
+    
     #region Singleton
     public void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(Instance);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else Destroy(gameObject);
     }
     #endregion
-    public void Start() => isGameOver = false;
-    
+    public void LoadNextScene()
+    {
+        int index = SceneManager.GetActiveScene().buildIndex + 1;
+        Debug.Log(index);
+        SceneManager.LoadSceneAsync(index);
+    }
+    public void ReloadCurrentScene()
+    {
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+    }
     public void UpdateScore()
     {
         Score += 10f;
@@ -24,9 +37,6 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
-        isGameOver = true;
-        UIManager.Instance.GameOverPanel.SetActive(true);
+        ReloadCurrentScene();
     }
-    public void OnPlayAgain() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
 }
