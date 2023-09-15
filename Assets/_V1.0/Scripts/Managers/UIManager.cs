@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
-        if (SceneManager.GetActiveScene().buildIndex < 5) TransitionToTransparent();
+        if (SceneManager.GetActiveScene().buildIndex < 6) TransitionToTransparent(); // change the logic if scene increases
         else TransitionToBlack();
     }
     #endregion
