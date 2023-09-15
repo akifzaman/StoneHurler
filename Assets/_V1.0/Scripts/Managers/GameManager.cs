@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
     public void LoadNextScene()
     {
         int index = SceneManager.GetActiveScene().buildIndex + 1;
-        Debug.Log(index);
         SceneManager.LoadSceneAsync(index);
     }
     public void ReloadCurrentScene()
@@ -33,7 +32,7 @@ public class GameManager : MonoBehaviour
     public void UpdateScore()
     {
         Score += 10f;
-        UIManager.Instance.OnScoreUpdated(Score);
+        //UIManager.Instance.OnScoreUpdated(Score);
     }
     public void GameOver()
     {

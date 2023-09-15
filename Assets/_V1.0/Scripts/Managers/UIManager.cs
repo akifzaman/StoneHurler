@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
-    public TextMeshProUGUI ScoreText;
     public TextMeshProUGUI StoneCountText;
     public List<GameObject> HealthIcons;
     public Slider WeightSlider;
@@ -22,7 +21,7 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
-        if(SceneManager.GetActiveScene().buildIndex < 5) TransitionToTransparent();
+        if (SceneManager.GetActiveScene().buildIndex < 5) TransitionToTransparent();
         else TransitionToBlack();
     }
     #endregion
@@ -46,7 +45,7 @@ public class UIManager : MonoBehaviour
         }
         HealthIcons[value - 1].SetActive(false);
     }
-    public void OnScoreUpdated(float value) => ScoreText.text = $"Score: {value}";
+    //public void OnScoreUpdated(float value) => ScoreText.text = $"Score: {value}";
     public void OnStoneCountUpdated(int value) => StoneCountText.text = $"x{value}";
     public void OnPlayerWeightUpdated(float value)
     {
