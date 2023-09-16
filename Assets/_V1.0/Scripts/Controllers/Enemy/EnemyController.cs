@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour
         enemy.Damage = 10f;
         enemy.MoveSpeed = 20f;
         enemy.JumpSpeed = 20f;
-        enemy.DetectionRange = 70f;
+        enemy.DetectionRange = 120f;
         //enemy.MovingDistance should be set from the editor based on the platform size it is currently on
     }
     private void Start()
