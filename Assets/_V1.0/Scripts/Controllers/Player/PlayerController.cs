@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,7 +7,6 @@ public class PlayerController : MonoBehaviour
 {
     #region Animation Keys
     private static readonly int jumpKey = Animator.StringToHash("IsJumping");
-    private static readonly int doubleJumpKey = Animator.StringToHash("IsDoubleJumping");
     private static readonly int moveKey = Animator.StringToHash("Speed");
     private static readonly int onDamageKey = Animator.StringToHash("IsTakeDamage");
     #endregion
@@ -124,14 +124,14 @@ public class PlayerController : MonoBehaviour
     {
         momentOfJump = Time.time % 100;
         playerRb.AddForce(new Vector2(0, verticalSpeed + (modifiedVelocity / 1.5f)));
-        _anim.SetBool(jumpKey, !IsGrounded());
+        _anim.SetBool(jumpKey, IsGrounded());
     }
     public void DoubleJump()
     {
         isDoubleJumpAllowed = false;
         playerRb.velocity = new Vector2(playerRb.velocity.x,0);
         playerRb.AddForce(new Vector2(0, verticalSpeed/1.25f));
-        _anim.SetBool(jumpKey, !IsGrounded());
+        _anim.SetBool(jumpKey, !isDoubleJumpAllowed);
     }
     public void Jump(InputAction.CallbackContext callbackContext)
     {
@@ -197,6 +197,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.transform.CompareTag("Ground")) _anim.SetBool(jumpKey, false);
         if (collision.gameObject.CompareTag("WeightPlatform") || collision.gameObject.CompareTag("HangingPlatform"))        
             transform.SetParent(collision.transform);        
         if (collision.gameObject.CompareTag("Item"))
@@ -215,7 +216,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.transform.CompareTag("Ground")) lastGroundExit = Time.time;       
+        if (collision.transform.CompareTag("Ground")) lastGroundExit = Time.time;   
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
