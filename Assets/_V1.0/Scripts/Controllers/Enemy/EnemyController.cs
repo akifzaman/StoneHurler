@@ -13,6 +13,8 @@ public class EnemyController : MonoBehaviour
     private Vector3 leftPoint;
     private Vector3 rightPoint;
     private Transform playerTransform;
+    [SerializeField] private bool isGrounded;
+    [SerializeField] private LayerMask _groundMask;
 
     private void Awake()
     {
@@ -39,7 +41,7 @@ public class EnemyController : MonoBehaviour
             float distanceToPlayerY = Mathf.Abs(transform.position.y - playerTransform.position.y);
             if (distanceToPlayerX <= enemy.DetectionRange && distanceToPlayerY >= 0f && distanceToPlayerY <= 5f) isFollowingPlayer = true;
             else isFollowingPlayer = false;
-            if (isFollowingPlayer) FollowPlayer();
+            if (isFollowingPlayer && IsGrounded()) FollowPlayer();
             else
             {
                 detectionIcon.gameObject.SetActive(false);
@@ -51,6 +53,11 @@ public class EnemyController : MonoBehaviour
             detectionIcon.gameObject.SetActive(false);
             MoveBetweenPoints();
         }
+    }
+    private bool IsGrounded()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 10f, _groundMask);
+        return hit.collider != null;
     }
     private void FollowPlayer()
     {
@@ -79,7 +86,7 @@ public class EnemyController : MonoBehaviour
         Vector3 movementDirection = (targetPoint - transform.position).normalized;
         transform.position += movementDirection * enemy.MoveSpeed * Time.deltaTime;
         float distanceToTarget = Vector3.Distance(transform.position, targetPoint);
-        if (distanceToTarget < 0.1f)
+        if (distanceToTarget < 1f)
         {
             movingRight = !movingRight;
             Vector3 newScale = transform.localScale;
